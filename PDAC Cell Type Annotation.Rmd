@@ -1,0 +1,218 @@
+---
+title: "PDAC Cell Type Annotation"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+date: "`r Sys.Date()`"
+---
+
+```{r setup_and_load, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 14,
+  fig.height = 10
+)
+
+library(Seurat)
+library(patchwork)
+library(ggplot2)
+
+#Sys.setenv('R_MAX_VSIZE' = 32000000000)
+
+Merged <- readRDS('/Users/sudharshiniram/Desktop/SRI Data Analysis/Data_Analysis_processed.rds')
+
+DefaultAssay(Merged) <- "RNA"
+
+# Join layers if using Seurat v5
+Merged <- JoinLayers(Merged)
+
+# Create a folder where all individual plot images will be downloaded
+plot_dir <- "/Users/sudharshiniram/Desktop/SRI Data Analysis/FeaturePlots"
+dir.create(plot_dir, showWarnings = FALSE, recursive = TRUE)
+```
+
+# UMAP Clusters
+
+```{r cluster_umap}
+DimPlot(Merged, reduction = "umap", label = TRUE) + NoLegend()
+
+ggsave(
+  filename = file.path(plot_dir, "00_UMAP_Clusters.png"),
+  plot = DimPlot(Merged, reduction = "umap", label = TRUE) + NoLegend(),
+  width = 10,
+  height = 8,
+  dpi = 300
+)
+```
+
+# Feature Plot Function
+
+```{r feature_plot_function, include=FALSE}
+save_feature_plot <- function(object, features, title, filename) {
+  
+  # Only keep genes that actually exist in your dataset
+  present_features <- intersect(features, rownames(object))
+  missing_features <- setdiff(features, present_features)
+  
+  if (length(missing_features) > 0) {
+    message("Missing genes for ", title, ": ", paste(missing_features, collapse = ", "))
+  }
+  
+  if (length(present_features) == 0) {
+    p <- ggplot() +
+      theme_void() +
+      ggtitle(paste("No listed marker genes found for", title))
+  } else {
+    p <- FeaturePlot(
+      object,
+      features = present_features,
+      cols = c("lightgrey", "blue"),
+      ncol = 3,
+      order = TRUE
+    ) +
+      plot_annotation(title = title)
+  }
+  
+  print(p)
+  
+  ggsave(
+    filename = file.path(plot_dir, filename),
+    plot = p,
+    width = 14,
+    height = 10,
+    dpi = 300,
+    limitsize = FALSE
+  )
+}
+```
+
+# Schwann Cells
+
+```{r schwann_cells_1}
+save_feature_plot(
+  object = Merged,
+  features = c("MBP", "S100B", "MPZ", "NCAM1", "JUN", "NRG1", "SCN7A", "ERBB3", "SOX2"),
+  title = "Schwann Cell Markers 1",
+  filename = "01_Schwann_Cell_Markers_1.png"
+)
+```
+
+```{r schwann_cells_2}
+save_feature_plot(
+  object = Merged,
+  features = c("S100B", "GFAP", "NGFR", "MBP", "POU3F1", "EGR2"),
+  title = "Schwann Cell Markers 2",
+  filename = "02_Schwann_Cell_Markers_2.png"
+)
+```
+
+# Duct / PDAC Cells
+
+```{r duct_cells}
+save_feature_plot(
+  object = Merged,
+  features = c("KRT19", "SOX9", "PDX1", "P2RY1", "BMPR1A"),
+  title = "Duct / PDAC Cell Markers",
+  filename = "03_Duct_PDac_Cell_Markers.png"
+)
+```
+
+# CAFs
+
+```{r cafs}
+save_feature_plot(
+  object = Merged,
+  features = c("CD74", "ACTA2", "HLA-DRB1"),
+  title = "CAF / apCAF Markers",
+  filename = "04_CAF_apCAF_Markers.png"
+)
+```
+
+# Macrophages
+
+```{r macrophages}
+save_feature_plot(
+  object = Merged,
+  features = c("CD68", "SIGLEC1", "CD163", "MRC1"),
+  title = "Macrophage Markers",
+  filename = "05_Macrophage_Markers.png"
+)
+```
+
+# Monocytes
+
+```{r monocytes}
+save_feature_plot(
+  object = Merged,
+  features = c("CD14", "FCGR3A", "CXCR4", "CD33"),
+  title = "Monocyte Markers",
+  filename = "06_Monocyte_Markers.png"
+)
+```
+
+# T Cells
+
+```{r t_cells}
+save_feature_plot(
+  object = Merged,
+  features = c("CD27", "CD8A", "SELL", "CD44", "CD3E", "CD4"),
+  title = "T Cell Markers",
+  filename = "07_T_Cell_Markers.png"
+)
+```
+
+# B Cells / Plasma Cells
+
+```{r b_cells}
+save_feature_plot(
+  object = Merged,
+  features = c("CD19", "PTPRC", "CD27", "IGHD", "TNFRSF17", "CXCR4", "SDC1", "SLAMF7"),
+  title = "B Cell / Plasma Cell Markers",
+  filename = "08_B_Cell_Plasma_Cell_Markers.png"
+)
+```
+
+# Acinar Cells
+
+```{r acinar_cells}
+save_feature_plot(
+  object = Merged,
+  features = c("GP2", "GATA4", "AMY1A", "PRSS1"),
+  title = "Acinar Cell Markers",
+  filename = "09_Acinar_Cell_Markers.png"
+)
+```
+
+# Endocrine Cells
+
+```{r endocrine_cells}
+save_feature_plot(
+  object = Merged,
+  features = c("TFRC", "GCG", "SST", "INS"),
+  title = "Endocrine Cell Markers",
+  filename = "10_Endocrine_Cell_Markers.png"
+)
+```
+
+# Endothelial Cells
+
+```{r endothelial_cells}
+save_feature_plot(
+  object = Merged,
+  features = c("PECAM1", "VWF", "CDH5"),
+  title = "Endothelial Cell Markers",
+  filename = "11_Endothelial_Cell_Markers.png"
+)
+```
+
+# All Done
+
+All feature plots were saved to:
+
+```{r show_output_folder}
+plot_dir
+```
