@@ -141,21 +141,7 @@ The lower gene and count thresholds excluded low-information droplets. The upper
 
 The mitochondrial cutoff was relatively stringent. This was appropriate for a single-nucleus dataset because nuclear RNA profiles are generally expected to have lower mitochondrial transcript representation than whole-cell single-cell RNA-sequencing profiles.
 
-### QC procedures not implemented in the supplied scripts
 
-The supplied scripts do not show the use of a dedicated computational doublet-detection method such as `DoubletFinder`, `scDblFinder`, or `Scrublet`. Therefore, the repository should not state that doublets were formally identified and removed. Instead, unusually high-feature and high-count nuclei were reduced through the upper QC thresholds.
-
-The scripts also do not show:
-
-* Ambient RNA correction with tools such as SoupX or CellBender.
-* Sample-specific adaptive QC thresholds.
-* Ribosomal-content filtering.
-* Removal based on intronic or exonic mapping percentage.
-* Formal batch-specific outlier modeling.
-
-These methods should not be described as completed unless they were run in additional code not included in this repository.
-
----
 
 ## 4. Normalization and feature selection
 
