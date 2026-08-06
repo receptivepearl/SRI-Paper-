@@ -295,12 +295,6 @@ The relevant parameters were:
 
 Cluster assignments were stored in metadata before manual annotation so that the original computational cluster identities were retained.
 
-### Important workflow distinction
-
-The repository includes exploratory and final-stage scripts created at different points in the analysis. The initial workflow used Harmony dimensions 1–20 and resolution 0.5, whereas the later broad-labeling workflow reran PCA and used dimensions 1–30 and resolution 0.2.
-
-The README should identify the 30-PC, resolution-0.2 workflow as the final broad-clustering configuration only if that is the object used to generate the manuscript’s final broad UMAP and downstream labels. Earlier settings should be described as preliminary clustering rather than combined with the final parameters.
-
 ---
 
 ## 7. Identification of cluster markers
